@@ -1,13 +1,16 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from 'react'
 import LeadsPage from './pages/LeadsPage'
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div>
-      <h1>Welcome to the Leads Management App</h1>
-
-      <LeadsPage />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/leads" element={<LeadsPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
