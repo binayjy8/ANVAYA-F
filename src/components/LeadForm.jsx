@@ -14,4 +14,6 @@ const defaulFom = {
 function LeadForm() {
     const [formData, setFormData] = useState(defaulFom);
     const [agents, setAgents] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState(null);
 }
