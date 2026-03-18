@@ -1,38 +1,52 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Reports from "../components/Reports";
 import API from "../services/api";
 
 function Dashboard() {
   const [agents, setAgents] = useState([]);
+  const [leadCount, setLeadCount] = useState(0);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchAgents() {
+    async function fetchDashboardData() {
       try {
-        const response = await API.get("/agents");
-        setAgents(response.data || []);
-      } catch (error) {
-        console.error("Error fetching agents:", error);
+        const [agentsResponse, leadsResponse] = await Promise.all([
+          API.get("/agents"),
+          API.get("/leads"),
+        ]);
+
+        setAgents(agentsResponse.data || []);
+        setLeadCount(leadsResponse.data.total || 0);
+      } catch (err) {
+        setError(err.message);
       }
     }
 
-    fetchAgents();
+    fetchDashboardData();
   }, []);
+
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
       <h1>Dashboard</h1>
 
-      {agents.length === 0 ? (
-        <p>No agents found</p>
-      ) : (
-        agents.map((agent) => (
-          <div key={agent._id}>
-            <p>Name: {agent.name}</p>
-            <p>Email: {agent.email}</p>
-            <p>CreatedAt: {agent.createdAt}</p>
-            <p>UpdatedAt: {agent.updatedAt}</p>
-          </div>
-        ))
-      )}
+      <div>
+        <p>Total Sales Agents: {agents.length}</p>
+        <p>Total Leads: {leadCount}</p>
+        <Link to="/leads">Go to Leads</Link>
+      </div>
+
+      <h2>Agents</h2>
+      {agents.map((agent) => (
+        <div key={agent._id}>
+          <p>{agent.name}</p>
+          <p>{agent.email}</p>
+        </div>
+      ))}
+
+      <Reports />
     </div>
   );
 }
