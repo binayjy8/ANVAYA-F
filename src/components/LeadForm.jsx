@@ -1,58 +1,47 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import API from "../services/api";
 
-const defaultForm = {
+const initialForm = {
   name: "",
   source: "Website",
   salesAgent: "",
   status: "New",
-  tags: "",
-  timeToClose: "",
   priority: "Medium",
+  timeToClose: "",
+  tags: "",
 };
 
-function LeadForm({ onLeadCreated }) {
-  const [form, setForm] = useState(defaultForm);
-  const [agents, setAgents] = useState([]);
+function LeadForm({ agents = [], onLeadCreated }) {
+  const [formData, setFormData] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    async function fetchAgents() {
-      try {
-        const response = await API.get("/agents");
-        setAgents(response.data || []);
-      } catch (err) {
-        setError(err.message);
-      }
-    }
-
-    fetchAgents();
-  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setSubmitting(true);
+    setMessage("");
     setError("");
 
     try {
       const payload = {
-        ...form,
-        timeToClose: Number(form.timeToClose),
-        tags: form.tags
+        ...formData,
+        timeToClose: Number(formData.timeToClose),
+        tags: formData.tags
           .split(",")
           .map((tag) => tag.trim())
           .filter(Boolean),
       };
 
-      const response = await API.post("/leads", payload);
-      setForm(defaultForm);
-      onLeadCreated?.(response.data);
+      await API.post("/leads", payload);
+      setMessage("Lead created successfully.");
+      setFormData(initialForm);
+      onLeadCreated?.();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -61,56 +50,99 @@ function LeadForm({ onLeadCreated }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Create Lead</h2>
-      {error && <p>{error}</p>}
+    <form className="form-grid" onSubmit={handleSubmit}>
+      <div className="section-head">
+        <h2>Add New Lead</h2>
+      </div>
 
-      <input name="name" placeholder="Lead Name" value={form.name} onChange={handleChange} required />
+      {message && <div className="alert success">{message}</div>}
+      {error && <div className="alert error">{error}</div>}
 
-      <select name="source" value={form.source} onChange={handleChange}>
-        <option>Website</option>
-        <option>Referral</option>
-        <option>Cold Call</option>
-      </select>
+      <label>
+        Lead Name
+        <input
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Acme Corp"
+          required
+        />
+      </label>
 
-      <select name="salesAgent" value={form.salesAgent} onChange={handleChange} required>
-        <option value="">Select Sales Agent</option>
-        {agents.map((agent) => (
-          <option key={agent._id} value={agent._id}>
-            {agent.name}
-          </option>
-        ))}
-      </select>
+      <label>
+        Lead Source
+        <select name="source" value={formData.source} onChange={handleChange}>
+          <option value="Website">Website</option>
+          <option value="Referral">Referral</option>
+          <option value="Cold Call">Cold Call</option>
+        </select>
+      </label>
 
-      <select name="status" value={form.status} onChange={handleChange}>
-        <option>New</option>
-        <option>Contacted</option>
-        <option>Qualified</option>
-        <option>Proposal Sent</option>
-        <option>Closed</option>
-      </select>
+      <label>
+        Sales Agent
+        <select
+          name="salesAgent"
+          value={formData.salesAgent}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select Sales Agent</option>
+          {agents.map((agent) => (
+            <option key={agent._id} value={agent._id}>
+              {agent.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
-      <input name="tags" placeholder="High Value, Follow-up" value={form.tags} onChange={handleChange} />
+      <label>
+        Lead Status
+        <select name="status" value={formData.status} onChange={handleChange}>
+          <option value="New">New</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Qualified">Qualified</option>
+          <option value="Proposal Sent">Proposal Sent</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </label>
 
-      <input
-        name="timeToClose"
-        type="number"
-        placeholder="Time to Close (days)"
-        value={form.timeToClose}
-        onChange={handleChange}
-        min="1"
-        required
-      />
+      <label>
+        Priority
+        <select name="priority" value={formData.priority} onChange={handleChange}>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </label>
 
-      <select name="priority" value={form.priority} onChange={handleChange}>
-        <option>High</option>
-        <option>Medium</option>
-        <option>Low</option>
-      </select>
+      <label>
+        Time to Close
+        <input
+          type="number"
+          name="timeToClose"
+          value={formData.timeToClose}
+          onChange={handleChange}
+          placeholder="30"
+          min="0"
+          required
+        />
+      </label>
 
-      <button type="submit" disabled={submitting}>
-        {submitting ? "Saving..." : "Add Lead"}
-      </button>
+      <label className="full-width">
+        Tags
+        <input
+          name="tags"
+          value={formData.tags}
+          onChange={handleChange}
+          placeholder="High Value, Follow-up"
+        />
+      </label>
+
+      <div className="full-width">
+        <button className="primary-button" type="submit" disabled={submitting}>
+          {submitting ? "Creating..." : "Create Lead"}
+        </button>
+      </div>
     </form>
   );
 }

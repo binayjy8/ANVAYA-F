@@ -1,32 +1,53 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import API from "../services/api";
 import LeadForm from "../components/LeadForm";
 import LeadList from "../components/LeadList";
-import LeadStatusView from "../components/LeadStatusView";
-import SalesAgentView from "../components/SalesAgentView";
-import API from "../services/api";
-import { buildLeadQuery, getFilterValue } from "../utils/queryHelper";
+import { getQueryValue, updateQueryParams } from "../utils/queryHelper";
 
 function LeadsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [leads, setLeads] = useState([]);
+  const [agents, setAgents] = useState([]);
+  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [error, setError] = useState("");
 
-  const status = getFilterValue(searchParams, "status");
-  const salesAgent = getFilterValue(searchParams, "salesAgent");
-  const source = getFilterValue(searchParams, "source");
-  const view = getFilterValue(searchParams, "view", "list");
+  const status = getQueryValue(searchParams, "status");
+  const salesAgent = getQueryValue(searchParams, "salesAgent");
+  const source = getQueryValue(searchParams, "source");
+  const sortBy = getQueryValue(searchParams, "sortBy");
 
   useEffect(() => {
-    async function fetchLeads() {
+    async function fetchPageData() {
       try {
         setLoading(true);
         setError("");
 
-        const query = buildLeadQuery({ status, salesAgent, source });
-        const response = await API.get(`/leads?${query}`);
-        setLeads(response.data.data || []);
+        const query = new URLSearchParams();
+        if (status) query.set("status", status);
+        if (salesAgent) query.set("salesAgent", salesAgent);
+        if (source) query.set("source", source);
+
+        const [leadsRes, agentsRes] = await Promise.all([
+          API.get(`/leads?${query.toString()}`),
+          API.get("/agents"),
+        ]);
+
+        let data = leadsRes.data.data || [];
+
+        if (sortBy === "priority") {
+          const order = { High: 1, Medium: 2, Low: 3 };
+          data = [...data].sort((a, b) => order[a.priority] - order[b.priority]);
+        }
+
+        if (sortBy === "timeToClose") {
+          data = [...data].sort((a, b) => a.timeToClose - b.timeToClose);
+        }
+
+        setLeads(data);
+        setAgents(agentsRes.data || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -34,60 +55,97 @@ function LeadsPage() {
       }
     }
 
-    fetchLeads();
-  }, [status, salesAgent, source]);
+    fetchPageData();
+  }, [status, salesAgent, source, sortBy, refreshKey]);
 
   function handleFilterChange(event) {
-    const { name, value } = event.target;
-    const next = new URLSearchParams(searchParams);
-    if (value) next.set(name, value);
-    else next.delete(name);
+    const next = updateQueryParams(searchParams, {
+      [event.target.name]: event.target.value,
+    });
     setSearchParams(next);
   }
 
+  function handleLeadCreated() {
+    setShowForm(false);
+    setRefreshKey((value) => value + 1);
+  }
+
   return (
-    <div>
-      <h1>Leads</h1>
+    <div className="layout">
+      <aside className="sidebar">
+        <h2 className="brand">Anvaya CRM</h2>
+        <nav className="nav-links">
+          <Link to="/">Dashboard</Link>
+          <Link to="/leads">Leads</Link>
+          <Link to="/status-view">Status View</Link>
+          <Link to="/agent-view">Agent View</Link>
+          <Link to="/reports">Reports</Link>
+        </nav>
+      </aside>
 
-      <LeadForm onLeadCreated={() => window.location.reload()} />
+      <main className="page-shell">
+        <div className="page-header">
+          <div>
+            <p className="eyebrow">Pipeline</p>
+            <h1>Lead Management</h1>
+          </div>
+          <button className="primary-button" onClick={() => setShowForm((value) => !value)}>
+            {showForm ? "Close Form" : "Add New Lead"}
+          </button>
+        </div>
 
-      <div>
-        <select name="status" value={status} onChange={handleFilterChange}>
-          <option value="">All Statuses</option>
-          <option value="New">New</option>
-          <option value="Contacted">Contacted</option>
-          <option value="Qualified">Qualified</option>
-          <option value="Proposal Sent">Proposal Sent</option>
-          <option value="Closed">Closed</option>
-        </select>
+        {showForm && (
+          <section className="panel">
+            <LeadForm agents={agents} onLeadCreated={handleLeadCreated} />
+          </section>
+        )}
 
-        <input
-          name="salesAgent"
-          placeholder="Sales Agent ID"
-          value={salesAgent}
-          onChange={handleFilterChange}
-        />
+        <section className="panel">
+          <div className="section-head">
+            <h2>Filters</h2>
+          </div>
 
-        <select name="source" value={source} onChange={handleFilterChange}>
-          <option value="">All Sources</option>
-          <option value="Website">Website</option>
-          <option value="Referral">Referral</option>
-          <option value="Cold Call">Cold Call</option>
-        </select>
+          <div className="filters-grid">
+            <select name="status" value={status} onChange={handleFilterChange}>
+              <option value="">All Statuses</option>
+              <option value="New">New</option>
+              <option value="Contacted">Contacted</option>
+              <option value="Qualified">Qualified</option>
+              <option value="Proposal Sent">Proposal Sent</option>
+              <option value="Closed">Closed</option>
+            </select>
 
-        <select name="view" value={view} onChange={handleFilterChange}>
-          <option value="list">List View</option>
-          <option value="status">Status View</option>
-          <option value="agent">Agent View</option>
-        </select>
-      </div>
+            <select name="salesAgent" value={salesAgent} onChange={handleFilterChange}>
+              <option value="">All Agents</option>
+              {agents.map((agent) => (
+                <option key={agent._id} value={agent._id}>
+                  {agent.name}
+                </option>
+              ))}
+            </select>
 
-      {loading && <p>Loading leads...</p>}
-      {error && <p>{error}</p>}
+            <select name="source" value={source} onChange={handleFilterChange}>
+              <option value="">All Sources</option>
+              <option value="Website">Website</option>
+              <option value="Referral">Referral</option>
+              <option value="Cold Call">Cold Call</option>
+            </select>
 
-      {!loading && !error && view === "list" && <LeadList leads={leads} />}
-      {!loading && !error && view === "status" && <LeadStatusView leads={leads} />}
-      {!loading && !error && view === "agent" && <SalesAgentView leads={leads} />}
+            <select name="sortBy" value={sortBy} onChange={handleFilterChange}>
+              <option value="">No Sorting</option>
+              <option value="priority">Priority</option>
+              <option value="timeToClose">Time to Close</option>
+            </select>
+          </div>
+        </section>
+
+        {error && <div className="alert error">{error}</div>}
+        {loading ? (
+          <p className="status-text">Loading leads...</p>
+        ) : (
+          <LeadList leads={leads} onLeadDeleted={() => setRefreshKey((value) => value + 1)} />
+        )}
+      </main>
     </div>
   );
 }

@@ -1,12 +1,11 @@
-import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
 import Dashboard from "./pages/Dashboard";
 import LeadsPage from "./pages/LeadsPage";
 import LeadDetails from "./components/LeadDetails";
-
-function LeadDetailsPage() {
-  const { id } = useParams();
-  return <LeadDetails leadId={id} />;
-}
+import Reports from "./components/Reports";
+import LeadStatusView from "./components/LeadStatusView";
+import SalesAgentView from "./components/SalesAgentView";
 
 function App() {
   return (
@@ -14,11 +13,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/leads" element={<LeadsPage />} />
-        <Route path="/leads/:id" element={<LeadDetailsPage />} />
+        <Route path="/leads/:id" element={<LeadDetails />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/status-view" element={<LeadStatusView />} />
+        <Route path="/agent-view" element={<SalesAgentView />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
-
