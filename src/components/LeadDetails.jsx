@@ -8,6 +8,7 @@ function LeadDetails() {
   const [comments, setComments] = useState([]);
   const [agents, setAgents] = useState([]);
   const [commentText, setCommentText] = useState("");
+  const [commentAuthor, setCommentAuthor] = useState("");
   const [editForm, setEditForm] = useState({
     status: "",
     salesAgent: "",
@@ -22,6 +23,9 @@ function LeadDetails() {
     async function fetchDetails() {
       try {
         setLoading(true);
+        setError("");
+        setMessage("");
+
         const [leadRes, commentsRes, agentsRes] = await Promise.all([
           API.get(`/leads/${id}`),
           API.get(`/leads/${id}/comments`),
@@ -29,9 +33,14 @@ function LeadDetails() {
         ]);
 
         const leadData = leadRes.data;
+        const agentList = agentsRes.data || [];
+
         setLead(leadData);
         setComments(commentsRes.data || []);
-        setAgents(agentsRes.data || []);
+        setAgents(agentList);
+
+        setCommentAuthor(leadData.salesAgent?._id || agentList[0]?._id || "");
+
         setEditForm({
           status: leadData.status || "New",
           salesAgent: leadData.salesAgent?._id || "",
@@ -54,7 +63,11 @@ function LeadDetails() {
     setMessage("");
 
     try {
-      const response = await API.post(`/leads/${id}/comments`, { commentText });
+      const response = await API.post(`/leads/${id}/comments`, {
+        commentText: commentText.trim(),
+        author: commentAuthor,
+      });
+
       setComments((prev) => [response.data, ...prev]);
       setCommentText("");
       setMessage("Comment added.");
@@ -84,11 +97,19 @@ function LeadDetails() {
   }
 
   if (loading) {
-    return <div className="page-shell"><p className="status-text">Loading lead details...</p></div>;
+    return (
+      <div className="page-shell">
+        <p className="status-text">Loading lead details...</p>
+      </div>
+    );
   }
 
   if (error && !lead) {
-    return <div className="page-shell"><div className="alert error">{error}</div></div>;
+    return (
+      <div className="page-shell">
+        <div className="alert error">{error}</div>
+      </div>
+    );
   }
 
   return (
@@ -140,7 +161,9 @@ function LeadDetails() {
                 Status
                 <select
                   value={editForm.status}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, status: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({ ...prev, status: e.target.value }))
+                  }
                 >
                   <option value="New">New</option>
                   <option value="Contacted">Contacted</option>
@@ -154,7 +177,9 @@ function LeadDetails() {
                 Sales Agent
                 <select
                   value={editForm.salesAgent}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, salesAgent: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({ ...prev, salesAgent: e.target.value }))
+                  }
                 >
                   <option value="">Select Sales Agent</option>
                   {agents.map((agent) => (
@@ -169,7 +194,9 @@ function LeadDetails() {
                 Priority
                 <select
                   value={editForm.priority}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, priority: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({ ...prev, priority: e.target.value }))
+                  }
                 >
                   <option value="High">High</option>
                   <option value="Medium">Medium</option>
@@ -183,12 +210,16 @@ function LeadDetails() {
                   type="number"
                   min="0"
                   value={editForm.timeToClose}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, timeToClose: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({ ...prev, timeToClose: e.target.value }))
+                  }
                 />
               </label>
 
               <div className="full-width">
-                <button className="primary-button" type="submit">Update Lead</button>
+                <button className="primary-button" type="submit">
+                  Update Lead
+                </button>
               </div>
             </form>
           </section>
@@ -200,14 +231,36 @@ function LeadDetails() {
           </div>
 
           <form className="comment-form" onSubmit={handleCommentSubmit}>
-            <textarea
-              rows="4"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Add a progress update..."
-              required
-            />
-            <button className="primary-button" type="submit">Submit Comment</button>
+            <label>
+              Comment Author
+              <select
+                value={commentAuthor}
+                onChange={(e) => setCommentAuthor(e.target.value)}
+                required
+              >
+                <option value="">Select comment author</option>
+                {agents.map((agent) => (
+                  <option key={agent._id} value={agent._id}>
+                    {agent.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Comment
+              <textarea
+                rows="4"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Add a progress update..."
+                required
+              />
+            </label>
+
+            <button className="primary-button comment-submit" type="submit">
+              Submit Comment
+            </button>
           </form>
 
           <div className="comments-list">
