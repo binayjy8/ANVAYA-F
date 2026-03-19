@@ -443,6 +443,45 @@ textarea:focus {
   margin: 0 auto;
 }
 
+.form-panel {
+  max-width: 720px;
+}
+
+.single-form {
+  display: grid;
+  gap: 18px;
+}
+
+.single-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.form-action {
+  width: fit-content;
+}
+
+.checkbox-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+
 @media (max-width: 960px) {
   .layout {
     grid-template-columns: 1fr;

@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./pages/Dashboard";
 import LeadsPage from "./pages/LeadsPage";
+import AddAgentPage from "./pages/AddAgentPage";
+import SettingsPage from "./pages/SettingsPage";
 import LeadDetails from "./components/LeadDetails";
 import Reports from "./components/Reports";
 import LeadStatusView from "./components/LeadStatusView";
@@ -17,6 +19,8 @@ function App() {
         <Route path="/reports" element={<Reports />} />
         <Route path="/status-view" element={<LeadStatusView />} />
         <Route path="/agent-view" element={<SalesAgentView />} />
+        <Route path="/add-agent" element={<AddAgentPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </BrowserRouter>
   );

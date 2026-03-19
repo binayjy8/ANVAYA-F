@@ -34,7 +34,11 @@ function Dashboard() {
   const totalLeads = pipeline.reduce((sum, item) => sum + item.totalLeads, 0);
 
   if (loading) {
-    return <div className="page-shell"><p className="status-text">Loading dashboard...</p></div>;
+    return (
+      <div className="page-shell">
+        <p className="status-text">Loading dashboard...</p>
+      </div>
+    );
   }
 
   return (
@@ -47,6 +51,8 @@ function Dashboard() {
           <Link to="/status-view">Status View</Link>
           <Link to="/agent-view">Agent View</Link>
           <Link to="/reports">Reports</Link>
+          <Link to="/add-agent">Add Agent</Link>
+          <Link to="/settings">Settings</Link>
         </nav>
       </aside>
 
@@ -56,7 +62,17 @@ function Dashboard() {
             <p className="eyebrow">Overview</p>
             <h1>Dashboard</h1>
           </div>
-          <Link className="primary-button" to="/leads">Manage Leads</Link>
+          <div className="header-actions">
+            <Link className="primary-button" to="/leads">
+              Manage Leads
+            </Link>
+            <Link className="secondary-button" to="/add-agent">
+              Add Agent
+            </Link>
+            <Link className="secondary-button" to="/settings">
+              Settings
+            </Link>
+          </div>
         </div>
 
         {error && <div className="alert error">{error}</div>}
@@ -78,14 +94,15 @@ function Dashboard() {
 
         <section className="panel">
           <div className="section-head">
-            <h2>Quick Filters</h2>
+            <h2>Quick Actions</h2>
           </div>
           <div className="chip-row">
-            <Link className="chip" to="/leads?status=New">New</Link>
+            <Link className="chip" to="/leads?status=New">New Leads</Link>
             <Link className="chip" to="/leads?status=Contacted">Contacted</Link>
             <Link className="chip" to="/leads?status=Qualified">Qualified</Link>
-            <Link className="chip" to="/leads?status=Proposal%20Sent">Proposal Sent</Link>
-            <Link className="chip" to="/leads?status=Closed">Closed</Link>
+            <Link className="chip" to="/reports">Open Reports</Link>
+            <Link className="chip" to="/add-agent">Create Agent</Link>
+            <Link className="chip" to="/settings">Settings</Link>
           </div>
         </section>
 
@@ -121,7 +138,9 @@ function Dashboard() {
                     <div className="list-row">
                       <div>
                         <strong>{lead.name}</strong>
-                        <p className="mini-meta">{lead.status} • {lead.priority}</p>
+                        <p className="mini-meta">
+                          {lead.status} • {lead.priority}
+                        </p>
                       </div>
                       <span>{lead.salesAgent?.name || "Unassigned"}</span>
                     </div>
@@ -131,6 +150,26 @@ function Dashboard() {
             </div>
           </section>
         </div>
+
+        <section className="panel">
+          <div className="section-head">
+            <h2>Sales Agents</h2>
+          </div>
+          <div className="stack-list">
+            {agents.length === 0 ? (
+              <p className="muted-text">No agents found.</p>
+            ) : (
+              agents.map((agent) => (
+                <div key={agent._id} className="list-row">
+                  <div>
+                    <strong>{agent.name}</strong>
+                    <p className="mini-meta">{agent.email}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
       </main>
     </div>
   );
