@@ -26,26 +26,33 @@ function LeadList({ leads, onLeadDeleted }) {
     <section className="cards-grid">
       {leads.map((lead) => (
         <article key={lead._id} className="lead-card">
-          <div className="card-top">
-            <div>
-              <h3>{lead.name}</h3>
-              <p className="mini-meta">{lead.source}</p>
+          <div className="card-content">
+            <div className="card-top">
+              <div>
+                <h3>{lead.name}</h3>
+                <p className="mini-meta">{lead.source}</p>
+              </div>
+              <span className={`badge badge-${lead.priority?.toLowerCase()}`}>
+                {lead.priority}
+              </span>
             </div>
-            <span className={`badge badge-${lead.priority?.toLowerCase()}`}>
-              {lead.priority}
-            </span>
-          </div>
 
-          <div className="details-grid">
-            <p><strong>Status:</strong> {lead.status}</p>
-            <p><strong>Agent:</strong> {lead.salesAgent?.name || "Unassigned"}</p>
-            <p><strong>Time to Close:</strong> {lead.timeToClose} days</p>
-            <p><strong>Tags:</strong> {lead.tags?.join(", ") || "None"}</p>
+            <div className="details-list">
+              <p><strong>Status:</strong> {lead.status}</p>
+              <p><strong>Agent:</strong> {lead.salesAgent?.name || "Unassigned"}</p>
+              <p><strong>Time to Close:</strong> {lead.timeToClose} days</p>
+              <p><strong>Tags:</strong> {lead.tags?.join(", ") || "None"}</p>
+            </div>
           </div>
 
           <div className="card-actions">
-            <Link className="secondary-button" to={`/leads/${lead._id}`}>View Details</Link>
-            <button className="danger-button" onClick={() => handleDelete(lead._id)}>
+            <Link className="secondary-button" to={`/leads/${lead._id}`}>
+              View Details
+            </Link>
+            <button
+              className="danger-button"
+              onClick={() => handleDelete(lead._id)}
+            >
               Delete
             </button>
           </div>

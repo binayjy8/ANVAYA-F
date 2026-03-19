@@ -38,7 +38,6 @@ function LeadDetails() {
         setLead(leadData);
         setComments(commentsRes.data || []);
         setAgents(agentList);
-
         setCommentAuthor(leadData.salesAgent?._id || agentList[0]?._id || "");
 
         setEditForm({
@@ -231,32 +230,26 @@ function LeadDetails() {
           </div>
 
           <form className="comment-form" onSubmit={handleCommentSubmit}>
-            <label>
-              Comment Author
-              <select
-                value={commentAuthor}
-                onChange={(e) => setCommentAuthor(e.target.value)}
-                required
-              >
-                <option value="">Select comment author</option>
-                {agents.map((agent) => (
-                  <option key={agent._id} value={agent._id}>
-                    {agent.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <select
+              value={commentAuthor}
+              onChange={(e) => setCommentAuthor(e.target.value)}
+              required
+            >
+              <option value="">Select comment author</option>
+              {agents.map((agent) => (
+                <option key={agent._id} value={agent._id}>
+                  {agent.name}
+                </option>
+              ))}
+            </select>
 
-            <label>
-              Comment
-              <textarea
-                rows="4"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Add a progress update..."
-                required
-              />
-            </label>
+            <textarea
+              rows="4"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Add a progress update..."
+              required
+            />
 
             <button className="primary-button comment-submit" type="submit">
               Submit Comment

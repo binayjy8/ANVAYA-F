@@ -50,6 +50,22 @@ function Reports() {
     fetchReports();
   }, []);
 
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top",
+        labels: {
+          boxWidth: 12,
+          font: {
+            size: 11,
+          },
+        },
+      },
+    },
+  };
+
   const pipelineChartData = {
     labels: pipeline.map((item) => item._id),
     datasets: [
@@ -136,14 +152,18 @@ function Reports() {
             <div className="section-head">
               <h2>Total Leads in Pipeline</h2>
             </div>
-            <Bar data={pipelineChartData} />
+            <div className="chart-box chart-box-small">
+              <Bar data={pipelineChartData} options={chartOptions} />
+            </div>
           </section>
 
           <section className="panel">
             <div className="section-head">
               <h2>Lead Status Distribution</h2>
             </div>
-            <Doughnut data={statusDistributionData} />
+            <div className="chart-box chart-box-donut-small">
+              <Doughnut data={statusDistributionData} options={chartOptions} />
+            </div>
           </section>
         </div>
 
@@ -151,7 +171,9 @@ function Reports() {
           <div className="section-head">
             <h2>Leads Closed by Sales Agent</h2>
           </div>
-          <Bar data={closedByAgentChartData} />
+          <div className="chart-box chart-box-medium">
+            <Bar data={closedByAgentChartData} options={chartOptions} />
+          </div>
         </section>
 
         <section className="panel">
