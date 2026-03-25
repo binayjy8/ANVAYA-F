@@ -26,3 +26,5 @@ npm run dev
 - Node JS
 - Express
 - Mongo DB
+
+## Features
