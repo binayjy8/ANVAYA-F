@@ -36,3 +36,7 @@ npm run dev
     New → Contacted → Qualified → Proposal Sent → Closed
 - Add tags and priority levels
 - Estimate time to close deals
+
+---
+
+## API Reference
