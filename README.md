@@ -5,3 +5,24 @@ A full-stack Lead Management CRM application built with React, Express, and Mong
 ---
 ## Demo Link
 [Live Demo] (https://anvaya-f.vercel.app/)
+
+## Quick Start
+
+```
+git clone https://github.com/binayjy8/ANVAYA-F.git
+cd my-app
+npm install
+npm run dev
+
+```
+
+---
+
+## Technologies
+- React JS
+- React Router
+- Axios
+- Chart.js
+- Node JS
+- Express
+- Mongo DB
