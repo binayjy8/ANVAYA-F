@@ -40,3 +40,5 @@ npm run dev
 ---
 
 ## API Reference
+
+### **/leads**
