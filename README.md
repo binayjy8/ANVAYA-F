@@ -42,3 +42,4 @@ npm run dev
 ## API Reference
 
 ### **/leads**
+List all Leads
