@@ -28,3 +28,11 @@ npm run dev
 - Mongo DB
 
 ## Features
+
+- Lead Management
+- Create, update, delete leads
+- Assign leads to sales agents
+- Track lead lifecycle:
+    New → Contacted → Qualified → Proposal Sent → Closed
+- Add tags and priority levels
+- Estimate time to close deals
