@@ -67,6 +67,15 @@ Sample Request<br>
 ```
 [{status, salesAgent, priority, tags}]
 ```
+
+### **/leads/:id**<br>
+DELETE – Delete Lead<br>
+Sample Response<br>
+```
+[{message}]
+```
+
+
 ## Contact
 
 For bugs and feature request, please reach out to mohantabinaybhusan@gmail.com
