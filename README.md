@@ -45,5 +45,5 @@ npm run dev
 List all Leads
 Sample Response
 ```
-[{name, source, }]
+[{name, source, salesAgent}]
 ```
