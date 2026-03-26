@@ -60,6 +60,13 @@ Sample Request<br>
 ```
 [{name, source, salesAgent, status, tags, timeToClose, priority}]
 ```
+
+### **/leads/:id**<br>
+PATCH – Update Lead<br>
+Sample Request<br>
+```
+[{status, salesAgent, priority, tags}]
+```
 ## Contact
 
 For bugs and feature request, please reach out to mohantabinaybhusan@gmail.com
