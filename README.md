@@ -47,3 +47,7 @@ Sample Response<br>
 ```
 [{name, source, salesAgent, status, tags, timeToClose, priority}]
 ```
+
+## Contact
+
+For bugs and feature request, please reach out to mohantabinaybhusan@gmail.com
