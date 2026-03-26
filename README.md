@@ -41,9 +41,9 @@ npm run dev
 
 ## API Reference
 
-### **/leads**
-List all Leads
-Sample Response
+### **/leads**<br>
+List all Leads<br>
+Sample Response<br>
 ```
 [{name, source, salesAgent, status, tags, timeToClose, priority}]
 ```
