@@ -47,7 +47,19 @@ Sample Response<br>
 ```
 [{name, source, salesAgent, status, tags, timeToClose, priority}]
 ```
+### **/leads/:id**<br>
+GET – Get Lead by ID<br>
+Sample Response<br>
+```
+[{name, source, salesAgent, status, tags, timeToClose, priority}]
+```
 
+### **/leads**<br>
+POST – Create Lead<br>
+Sample Request<br>
+```
+[{name, source, salesAgent, status, tags, timeToClose, priority}]
+```
 ## Contact
 
 For bugs and feature request, please reach out to mohantabinaybhusan@gmail.com
