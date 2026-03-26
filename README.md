@@ -43,3 +43,7 @@ npm run dev
 
 ### **/leads**
 List all Leads
+Sample Response
+```
+[{name, source, }]
+```
