@@ -27,8 +27,12 @@ npm run dev
 - Express
 - Mongo DB
 
+---
+
 ## Demo Video
-W
+Watch a walk through (4 minutes) of all the major features of the app:
+[Video] (https://drive.google.com/file/d/1Gc1EphYtxaHjVJBm8AokTr-8QmuGL_AL/view?usp=sharing)
+---
 
 ## Features
 
