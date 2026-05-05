@@ -36,50 +36,48 @@ Watch a walk through (4 minutes) of all the major features of the app:
 
 ## Features
 
-- Lead Management
-- Create, update, delete leads
-- Assign leads to sales agents
-- Track lead lifecycle:
-    New → Contacted → Qualified → Proposal Sent → Closed
-- Add tags and priority levels
-- Estimate time to close deals
+- Allows users to create, update, and delete leads.
+- Enables users to assign leads to sales agents.
+- Allows users to track the lead lifecycle: New → Contacted → Qualified → Proposal Sent → Closed.
+- Enables users to add tags and set priority levels.
+- Allows users to estimate the time required to close deals.
 
 ---
 
 ## API Reference
 
-### **/leads**<br>
-List all Leads<br>
+### **GET /leads**<br>
+Retrieves all leads.<br>
 Sample Response<br>
 ```
-[{name, source, salesAgent, status, tags, timeToClose, priority}]
+[{"name": "string", "source": "string", "salesAgent": "string", "status": "string", "tags": ["string"], "timeToClose": "number", "priority": "string"}]
 ```
-### **/leads/:id**<br>
-GET – Get Lead by ID<br>
+### **GET /leads/:id**<br>
+Retrieves a lead by ID.<br>
 Sample Response<br>
 ```
-[{name, source, salesAgent, status, tags, timeToClose, priority}]
+[{"name": "string", "source": "string", "salesAgent": "string", "status": "string", "tags": ["string"], "timeToClose": "number", "priority": "string"}]
 ```
 
-### **/leads**<br>
-POST – Create Lead<br>
+### **POST /leads**<br>
+Creates a new lead.<br>
 Sample Request<br>
 ```
-[{name, source, salesAgent, status, tags, timeToClose, priority}]
+[{"name": "string", "source": "string", "salesAgent": "string", "status": "string", "tags": ["string"], "timeToClose": "number", "priority": "string"}]
 ```
 
-### **/leads/:id**<br>
-PATCH – Update Lead<br>
+### **PATCH /leads/:id**<br>
+Updates an existing lead.<br>
 Sample Request<br>
 ```
-[{status, salesAgent, priority, tags}]
+[{"status": "string", "salesAgent": "string", "priority": "string", "tags": ["string"]}]
 ```
 
-### **/leads/:id**<br>
-DELETE – Delete Lead<br>
+### **DELETE /leads/:id**<br>
+Deletes a lead.<br>
 Sample Response<br>
 ```
-[{message}]
+[{"message": "Lead deleted successfully"}]
 ```
 
 
