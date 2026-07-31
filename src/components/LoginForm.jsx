@@ -16,17 +16,16 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     try {
-      const res = await API.post("/login", { username, password });
-      sessionStorage.setItem("token", res.data.token);
-      sessionStorage.setItem("username", res.data.username);
+      const res = await loginUser(username, password);
+
+      sessionStorage.setItem("token", res.token);
+      sessionStorage.setItem("username", res.username);
+
       navigate("/", { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          err.response?.data?.message ||
-          "Something went wrong. Try again."
-      );
+      setError(err.message || "Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
