@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";
+import API from "../services/authService";
 import "./LoginForm.css";
 
 const PIPELINE = ["New", "Contacted", "Qualified", "Proposal Sent", "Closed"];
@@ -18,8 +18,8 @@ export default function LoginForm() {
     setLoading(true);
     try {
       const res = await API.post("/login", { username, password });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("username", res.data.username);
+      sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("username", res.data.username);
       navigate("/", { replace: true });
     } catch (err) {
       setError(
