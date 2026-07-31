@@ -46,6 +46,7 @@ function Dashboard() {
       <aside className="sidebar">
         <h2 className="brand">Anvaya CRM</h2>
         <nav className="nav-links">
+          <Link to="/login">Login</Link>
           <Link to="/">Dashboard</Link>
           <Link to="/leads">Leads</Link>
           <Link to="/status-view">Status View</Link>
