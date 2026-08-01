@@ -1,24 +1,42 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
+import { loginUser, registerUser } from "../services/authService";
 import "./LoginForm.css";
 
 const PIPELINE = ["New", "Contacted", "Qualified", "Proposal Sent", "Closed"];
 
 export default function LoginForm() {
+  const [mode, setMode] = useState("login"); // "login" | "register"
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const isRegister = mode === "register";
+
+  const switchMode = () => {
+    setMode(isRegister ? "login" : "register");
+    setError("");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
+    if (isRegister && password !== confirmPassword) {
+      setError("Passwords don't match.");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const res = await loginUser(username, password);
+      const res = isRegister
+        ? await registerUser(username, password)
+        : await loginUser(username, password);
 
       sessionStorage.setItem("token", res.token);
       sessionStorage.setItem("username", res.username);
@@ -35,19 +53,8 @@ export default function LoginForm() {
     <div className="login-screen">
       <aside className="login-brand">
         <div className="login-brand__top">
-          <svg
-            className="login-mark"
-            width="34"
-            height="34"
-            viewBox="0 0 34 34"
-            fill="none"
-          >
-            <path
-              d="M4 5 L30 5 L19 29 L15 29 Z"
-              stroke="var(--accent)"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
+          <svg className="login-mark" width="34" height="34" viewBox="0 0 34 34" fill="none">
+            <path d="M4 5 L30 5 L19 29 L15 29 Z" stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round" />
           </svg>
           <span className="login-wordmark">Anvaya</span>
         </div>
@@ -61,9 +68,7 @@ export default function LoginForm() {
           {PIPELINE.map((stage, i) => (
             <li
               key={stage}
-              className={`pipeline__step${
-                i === PIPELINE.length - 1 ? " pipeline__step--final" : ""
-              }`}
+              className={`pipeline__step${i === PIPELINE.length - 1 ? " pipeline__step--final" : ""}`}
               style={{ animationDelay: `${i * 110 + 200}ms` }}
             >
               <span className="pipeline__dot" />
@@ -78,8 +83,12 @@ export default function LoginForm() {
       <main className="login-panel">
         <form className="login-form" onSubmit={handleSubmit} noValidate>
           <div className="login-form__head">
-            <h2>Welcome back</h2>
-            <p>Sign in to pick up where you left off.</p>
+            <h2>{isRegister ? "Create an account" : "Welcome back"}</h2>
+            <p>
+              {isRegister
+                ? "Set up access to your team's pipeline."
+                : "Sign in to pick up where you left off."}
+            </p>
           </div>
 
           <label className="field">
@@ -100,10 +109,23 @@ export default function LoginForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              autoComplete={isRegister ? "new-password" : "current-password"}
               required
             />
           </label>
+
+          {isRegister && (
+            <label className="field">
+              <span className="field__label">Confirm password</span>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+              />
+            </label>
+          )}
 
           {error && (
             <p className="login-error" role="alert">
@@ -112,7 +134,11 @@ export default function LoginForm() {
           )}
 
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? <span className="spinner" /> : "Sign in"}
+            {loading ? <span className="spinner" /> : isRegister ? "Create account" : "Sign in"}
+          </button>
+
+          <button type="button" className="login-switch" onClick={switchMode}>
+            {isRegister ? "Already have an account? Sign in" : "Don't have an account? Register"}
           </button>
         </form>
       </main>

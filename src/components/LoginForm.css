@@ -272,3 +272,17 @@
     display: none;
   }
 }
+.login-switch {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
+}
+
+.login-switch:hover {
+  color: var(--accent);
+}
